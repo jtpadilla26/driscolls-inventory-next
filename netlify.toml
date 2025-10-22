@@ -1,7 +1,7 @@
 [build]
-  command = "npm run build"
+  # Run typecheck & lint before building. If these fail, the build stops (strict).
+  command = "npm run typecheck && npm run lint && npm run build"
   publish = ".next"
 
 [build.environment]
-  # Keep it simple: major LTS line. Netlify handles the latest patch.
   NODE_VERSION = "20"
