@@ -3,4 +3,5 @@
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION = "20.17.0"
+  # Keep it simple: major LTS line. Netlify handles the latest patch.
+  NODE_VERSION = "20"
