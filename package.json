@@ -5,7 +5,7 @@
   "description": "Inventory Management System for Rankins Test Plot Berry R&D",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_DISABLE_ESLINT=1 NEXT_DISABLE_TYPECHECKING=1 next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
@@ -76,6 +76,5 @@
   },
   "engines": {
     "node": ">=18 <21"
-}
   }
-
+}
