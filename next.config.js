@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  experimental: { typedRoutes: true },
-  redirects: async () => [
-    { source: "/", destination: "/dashboard", permanent: false }
-  ]
+  webpack: (config) => {
+    // Prevent bundling native `canvas` on Netlify
+    config.resolve = config.resolve || {};
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      canvas: false,
+    };
+    return config;
+  },
 };
+
 module.exports = nextConfig;
