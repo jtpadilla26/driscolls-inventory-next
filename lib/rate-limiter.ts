@@ -1,38 +1,70 @@
-// Simple in-memory sliding-window limiter (per key).
+// lib/rate-limiter.ts
+// Simple in-memory rate limiter for server runtime.
 // Usage: const r = rateLimit(key, { limit: 20, windowMs: 60_000 });
+// If r.ok === false, block the request.
 
-type Options = { limit?: number; windowMs?: number };
-const hits = new Map<string, number[]>();
+export type RateLimitOptions = {
+  /** max requests allowed within the window (default 20) */
+  limit?: number;
+  /** window length in ms (default 60_000 = 1 minute) */
+  windowMs?: number;
+};
 
-export function rateLimit(key: string, opts: Options = {}) {
-  const limit = opts.limit ?? 20;
-  const windowMs = opts.windowMs ?? 60_000;
+type HitStore = Map<string, number[]>;
+
+// Singleton store for hits per key
+const HIT_STORE: HitStore = new Map();
+
+/**
+ * Register a hit and compute current allowance.
+ * @returns { ok, remaining, resetMs, limit, count }
+ */
+export function rateLimit(key: string, opts: RateLimitOptions = {}) {
+  const limit = Number.isFinite(opts.limit as number) ? (opts.limit as number) : 20;
+  const windowMs = Number.isFinite(opts.windowMs as number) ? (opts.windowMs as number) : 60_000;
 
   const now = Date.now();
-  const cutoff = now - windowMs;
+  const windowStart = now - windowMs;
 
-  const arr = hits.get(key)?.filter((t) => t > cutoff) ?? [];
-  if (arr.length >= limit) {
-    const resetInMs = Math.max(0, windowMs - (now - arr[0]));
-    return { allowed: false, remaining: 0, resetInMs };
-  }
+  // get recent hits for this key (within window)
+  const list = HIT_STORE.get(key) ?? [];
+  const recent = list.filter((ts) => ts > windowStart);
 
-  arr.push(now);
-  hits.set(key, arr);
+  // add this hit
+  recent.push(now);
+  HIT_STORE.set(key, recent);
 
-  return { allowed: true, remaining: Math.max(0, limit - arr.length), resetInMs: 0 };
+  const count = recent.length;
+  const ok = count <= limit;
+
+  // when will the window fully reset (based on oldest hit still in window)
+  const oldest = recent[0] ?? now;
+  const resetMs = Math.max(0, windowMs - (now - oldest));
+
+  const remaining = Math.max(0, limit - count);
+
+  return { ok, remaining, resetMs, limit, count };
 }
 
-type Options = { limit?: number; windowMs?: number };
-const hits = new Map<string, number[]>();
-export function rateLimit(key: string, opts: Options = {}) {
-  const limit = opts.limit ?? 20, windowMs = opts.windowMs ?? 60_000;
-  const now = Date.now(), cutoff = now - windowMs;
-  const arr = hits.get(key)?.filter(t => t > cutoff) ?? [];
-  if (arr.length >= limit) {
-    const resetInMs = Math.max(0, windowMs - (now - arr[0]));
-    return { allowed: false, remaining: 0, resetInMs };
+/**
+ * Helper: throw if over limit.
+ */
+export function assertRateLimit(key: string, opts?: RateLimitOptions) {
+  const r = rateLimit(key, opts);
+  if (!r.ok) {
+    const err: any = new Error('Rate limit exceeded');
+    err.status = 429;
+    err.retryAfterMs = r.resetMs;
+    throw err;
   }
-  arr.push(now); hits.set(key, arr);
-  return { allowed: true, remaining: Math.max(0, limit - arr.length), resetInMs: 0 };
+  return r;
+}
+
+/**
+ * Reset stored hits (for tests or admin tools).
+ * If key omitted, clears all.
+ */
+export function resetRateLimit(key?: string) {
+  if (typeof key === 'string') HIT_STORE.delete(key);
+  else HIT_STORE.clear();
 }
