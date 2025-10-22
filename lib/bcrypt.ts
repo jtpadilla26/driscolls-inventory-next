@@ -1,6 +1,6 @@
 // Thin wrapper so we can swap implementations easily.
 // On serverless/Netlify, prefer 'bcryptjs' (pure JS).
-import bcrypt from 'bcryptjs';
+import { hashPassword, verifyPassword } from '@/lib/bcrypt';
 
 export async function hashPassword(plain: string, saltRounds = 10) {
   return await bcrypt.hash(plain, saltRounds);
