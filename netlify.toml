@@ -1,0 +1,11 @@
+[build]
+  command = "npm ci --omit=optional || npm install --no-fund --no-audit --no-optional; npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+  CI = "true"
+  NPM_CONFIG_LOGLEVEL = "verbose"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
