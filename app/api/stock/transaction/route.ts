@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession();
 
-    if (!limiter.check(session.user.id).ok) {
+    if (!limiter.check(session.user.id).success) {
       return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
     }
 

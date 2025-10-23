@@ -1,6 +1,6 @@
 // lib/bcrypt.ts
 // Pure-JS bcrypt wrapper for serverless environments.
-import bcryptjs from 'bcryptjs';
+import * as bcryptjs from 'bcryptjs';
 
 export async function hashPassword(plain: string, saltRounds = 10) {
   return bcryptjs.hash(plain, saltRounds);
