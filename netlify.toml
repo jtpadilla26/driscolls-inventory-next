@@ -1,6 +1,5 @@
-# -------- Netlify config (Next.js SSR) --------
 [build]
-  command = "npm ci && npm run build"
+  command = "npm install --no-fund --no-audit --no-optional && npm run build"
   publish = ".next"
 
 [build.environment]
@@ -10,4 +9,3 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-
