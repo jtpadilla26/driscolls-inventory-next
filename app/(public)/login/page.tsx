@@ -20,7 +20,6 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   rememberMe: z.boolean().optional(),
 });
-
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
@@ -49,19 +48,16 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
-
     try {
       const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
       });
 
       if (error) {
         toast({
           title: 'Login failed',
           description: error.message,
-          variant: 'destructive',
         });
         return;
       }
@@ -78,12 +74,11 @@ export default function LoginPage() {
         router.push('/dashboard');
         router.refresh();
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (err) {
+      console.error('Login error:', err);
       toast({
         title: 'Something went wrong',
         description: 'Please try again later.',
-        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -96,23 +91,19 @@ export default function LoginPage() {
       toast({
         title: 'Email required',
         description: 'Please enter your email address to receive a magic link.',
-        variant: 'destructive',
       });
       return;
     }
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-      });
+      // Keep it simple: no emailRedirectTo to avoid TS mismatch in strict mode
+      const { error } = await supabase.auth.signInWithOtp({ email });
 
       if (error) {
         toast({
           title: 'Failed to send magic link',
           description: error.message,
-          variant: 'destructive',
         });
       } else {
         toast({
@@ -120,12 +111,11 @@ export default function LoginPage() {
           description: 'Check your email for the login link.',
         });
       }
-    } catch (error) {
-      console.error('Magic link error:', error);
+    } catch (err) {
+      console.error('Magic link error:', err);
       toast({
         title: 'Something went wrong',
         description: 'Please try again later.',
-        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -139,7 +129,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-green-50" />
       </div>
 
-      {/* Animated berry shapes */}
+      {/* Animated shapes */}
       <motion.div
         className="absolute top-10 left-10 w-64 h-64 bg-purple-200 rounded-full opacity-20 blur-3xl"
         animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
