@@ -1,4 +1,5 @@
 [build]
+  # No lockfile path: always do a fresh install *without* optional deps, then build
   command = "npm install --no-fund --no-audit --no-optional && npm run build"
   publish = ".next"
 
@@ -6,3 +7,8 @@
   NODE_VERSION = "20"
   CI = "true"
   NPM_CONFIG_LOGLEVEL = "verbose"
+  # Belt-and-braces: also tell npm via env to skip optionals
+  NPM_CONFIG_OPTIONAL = "false"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
