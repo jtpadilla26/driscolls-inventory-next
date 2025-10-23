@@ -4,8 +4,5 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_CONFIG_LOGLEVEL = "verbose"
   CI = "true"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+  NPM_CONFIG_LOGLEVEL = "verbose"
