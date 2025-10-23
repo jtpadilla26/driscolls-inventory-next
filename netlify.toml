@@ -1,11 +1,23 @@
 [build]
-command = "next build"
+# Print versions + key envs, then build. If build fails, we still see the real error.
+command = """
+echo '--- Versions ---' && node -v && npm -v && npx -y next --version \
+&& echo '--- Public envs ---' \
+&& node -e "console.log('NEXT_PUBLIC_SUPABASE_URL:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)" \
+&& node -e "console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)" \
+&& echo '--- Starting next build ---' \
+&& next build
+"""
 publish = ".next"
 
 [build.environment]
+# Use a supported Node family
 NODE_VERSION = "22"
-# Optional but helpful
 NEXT_TELEMETRY_DISABLED = "1"
+# Show verbose npm logs during Netlify's auto-install step
+NPM_FLAGS = "--no-audit --no-fund --loglevel=verbose"
+# Turn on extra logging for Next/Netlify runtime
+DEBUG = "*,@netlify/*,next:*"
 
 [[plugins]]
 package = "@netlify/plugin-nextjs"
