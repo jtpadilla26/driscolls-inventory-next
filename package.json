@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "20.18.1",
+    "node": "22",
     "npm": ">=10"
   },
   "scripts": {
@@ -15,21 +15,26 @@
     "format": "prettier -w ."
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.46.1",
     "@tanstack/react-query": "^5.56.2",
+    "framer-motion": "^11.3.31",
+    "lucide-react": "^0.462.0",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-hook-form": "^7.53.0",
     "recharts": "^2.12.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.9.1",
+    "@netlify/plugin-nextjs": "^5.14.3",
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
+    "eslint": "^9.13.0",
     "eslint-config-next": "14.2.5",
     "postcss": "^8.4.39",
     "prettier": "^3.3.3",
